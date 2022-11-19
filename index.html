@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+<html>
+
+<head> 
+	<title>UTS LAB PC1</title>
+</head>
+
+<body style="background-image: url(img.jpg); background-size: cover; background-repeat: repeat; background-attachment: fixed;">
+	<center>
+		<h1>UTS LAB PC1</h1>
+		<div class="row">
+			<div class="column">
+				<canvas id='canvas1' style='display:block;margin:10px'></canvas>
+				<canvas id='canvas2' style='display:block;margin:10px'></canvas>
+			</div>
+			<div class="column">
+				<h2>Sonia Dila Puspita (201401016)</h2>
+				<button id='read'>READ IMAGE</button>
+				<button id='ori'>ORIGINAL IMAGE</button><br><br>
+        <button id='1b'>Nomor 1B</button>
+        <button id='1c'>Nomor 1C</button>
+			</div>
+		</div>
+	</center>
+</body>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+	body {
+    font-family: 'Poppins', sans-serif;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	.column {
+		float: left;
+		padding: 10px;
+		width: 33.3%;
+	}
+
+	/* Clear floats after the columns */
+	.row:after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+  canvas {
+    width:300px;
+    height: 300px;
+  }
+  h1 {
+  color: white;	
+  font-size: 50px;
+  }
+  h2 {
+    color:brown;	
+    font-size: 25px;
+  }
+</style>
+<script src='pc.js'></script>
+<script>
+
+	var canvas = document.getElementById('canvas1')
+	var obj = new pc(canvas)
+	obj.image2canvas("logousu.png")
+	var canvas2 = document.getElementById('canvas2')
+	var obj2 = new pc(canvas2)
+	obj2.blank2canvas(200, 200)
+	var tes = new Array()
+
+	document.getElementById('read').addEventListener('click', function () {
+		tes = obj.image2read()
+	})
+
+	document.getElementById('ori').addEventListener('click', function () {
+		obj.image2original()
+	})
+
+	//Nomor 1B 
+document.getElementById('1b').addEventListener('click',function(){
+//copy array to array without reference
+      tesbackup = new Array();
+      for (var c = 0; c < tes.length; c++) {
+        temp = new Array();
+        for (var d = 0; d < 4; d++) {
+          temp.push(tes[c][d]);
+        }
+        tesbackup.push(temp);
+      }
+      x = obj.i2x(i); // mengambil nilai index ke dalam koordinat x
+      y = obj.i2y(i);
+
+      var wnow = obj.width;
+      for (var i = 0; i < tesbackup.length; i++) {
+        x = obj.i2x(i); 
+        y = obj.i2y(i);
+        if (x < wnow / 4) {
+          tes[i][0] = tesbackup[i][0] + 255;
+        }
+
+        if (x > wnow / 4 && x < (wnow * 2) / 4) {
+          tes[i][1] = tesbackup[i][1] + 255;
+        }
+        if (x > (wnow * 2) / 4) {
+          filtersize = 5;
+          borderparam = (filtersize - 1) / 2;
+          meandoubleparam = filtersize * filtersize;
+
+          xstart = obj.i2x(i) - borderparam;
+          xend = obj.i2x(i) + borderparam;
+          ystart = obj.i2y(i) - borderparam;
+          yend = obj.i2y(i) + borderparam;
+          red = 255;
+          green = 255;
+          blue = 255;
+          for (var yc = ystart; yc <= yend; yc++) {
+            for (var xc = xstart; xc <= xend; xc++) {
+              if (yc >= 0 && xc >= 0 && xc < obj.width && yc < obj.height) {
+                red += tesbackup[obj.xy2i(xc, yc)][0];
+                green += tesbackup[obj.xy2i(xc, yc)][1];
+                blue += tesbackup[obj.xy2i(xc, yc)][2];
+                meandoubleparam++;
+              }
+            }
+          }
+          tes[i][0] = Math.floor(red / meandoubleparam);
+          tes[i][1] = Math.floor(green / meandoubleparam);
+          tes[i][2] = Math.floor(blue / meandoubleparam);
+        }
+      }
+      obj.array2canvas(tes);
+    });
+
+//Nomor 1C
+document.getElementById('1c').addEventListener('click',function(){
+//copy array to array without reference
+tesbackup = new Array();
+        for (var c = 0; c < tes.length; c++) {
+          temp = new Array();
+          for (var d = 0; d < 4; d++) {
+            temp.push(tes[c][d]);
+          }
+          tesbackup.push(temp);
+        }
+        x = obj.i2x(i);
+        y = obj.i2y(i);
+
+        var wnow = obj.width;
+        var ynow = obj.height;
+        for (var i = 0; i < tesbackup.length; i++) {
+          x = obj.i2x(i);
+          y = obj.i2y(i);
+          if (x < wnow / 2 && y < ynow / 2) {
+            tes[i][0] = tesbackup[i][0] + 255;
+          }
+
+          if (x < wnow / 2 && y > ynow / 2) {
+            tes[i][0] = tesbackup[i][0] + 255;
+            tes[i][1] = tesbackup[i][1] + 255;
+          }
+
+          if (x > wnow / 2 && y < ynow / 2) {
+            tes[i][1] = tesbackup[i][1] + 255;
+          }
+
+          if (x > wnow / 2 && y > ynow / 2) {
+            tes[i][2] = tesbackup[i][2] + 255;
+          }
+        }
+        obj.array2canvas(tes);
+})
+</script>
